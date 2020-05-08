@@ -29,7 +29,6 @@ app.get('/index', (req, res) => {
   connection.query(
     'SELECT id, name FROM items ORDER BY id',
     (error, results) => {
-      console.log(results);
       res.render('index.ejs', {items: results});
     }
   );
@@ -46,6 +45,39 @@ app.post('/create', (req, res) => {
     'INSERT INTO items(name) VALUES(?)',
     [req.body.itemName],
     (error, results) => {
+      res.redirect('/index');
+    }
+  );
+});
+
+//商品の消去
+app.post('/delete/:id', (req, res) => {
+  connection.query(
+    'DELETE FROM items WHERE id = ?',
+    [req.params.id],
+    (error, results) => {
+      res.redirect('/index');
+    }
+  );
+});
+
+//商品の編集
+app.get('/edit/:id', (req, res) => {
+  connection.query(
+    'SELECT * FROM items WHERE id = ?',
+    [req.params.id],
+    (error, results) => {
+      res.render('edit.ejs', {item: results[0]});
+    }
+  );
+});
+
+app.post('/update/:id', (req, res) => {
+  connection.query(
+    'UPDATE items SET name = ? WHERE id = ?',
+    [req.body.itemName, req.params.id],
+    (error, results) => {
+      console.log(results);
       res.redirect('/index');
     }
   );
